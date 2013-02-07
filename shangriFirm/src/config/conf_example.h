@@ -53,7 +53,7 @@
 /* Note: only the listed tasks have hardware support. */
 
 //#define confINCLUDE_USART_ECHO_TASKS
-#define confINCLUDE_USART_UART_TUNNEL
+//#define confINCLUDE_USART_UART_TUNNEL
 //#define confINCLUDE_USART_CLI
 //#define confINCLUDE_SPI_FLASH_TASK
 

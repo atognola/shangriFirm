@@ -40,7 +40,7 @@
  * \asf_license_stop
  *
  */
-
+#ifdef PEPITO
 /* Standard includes. */
 #include <stdio.h>
 #include <string.h>
@@ -56,6 +56,9 @@
 #include "demo-tasks.h"
 #include <gpio.h>
 #include "sam3n_ek.h"
+
+/* Debug includes. */
+#include "sim900/sim900.h"
 
 /* The buffer provided to the USART driver to store incoming character in. */
 #ifdef confINCLUDE_USART_UART_TUNNEL
@@ -200,23 +203,26 @@ static void uart_tunnel_rx_task(void *pvParameters)
 	uint32_t				pwr_command,i=0;
 	const portTickType		time_out_definition = (100UL / portTICK_RATE_MS),
 							short_delay = (10UL / portTICK_RATE_MS);
-	xSemaphoreHandle		notification_semaphore;
-	status_code_t returned_status;
+	status_code_t			returned_status;
+	
+	//Para debug nomás!
+	sim900_t				sim_instance;
+	sim_command_t			a_command;
 	
 	/* The (already open) USART port is passed in as the task parameter. */
 	usart_port = (freertos_usart_if *) pvParameters;
-
+	sim_instance.usart_port=usart_port;
 	/* Create the semaphore to be used to get notified of end of
 	transmissions. */
-	vSemaphoreCreateBinary(notification_semaphore);
-	configASSERT(notification_semaphore);
+// 	vSemaphoreCreateBinary(notification_semaphore);
+// 	configASSERT(notification_semaphore);
 	/* Clear memory buffer */
 	memset(rx_buffer, 0x00, sizeof(rx_buffer));
 	
 	/* Start with the semaphore in the expected state - no data has been sent
 	yet.  A block time of zero is used as the semaphore is guaranteed to be
 	there as it has only just been created. */
-	xSemaphoreTake(notification_semaphore, 0);
+	//xSemaphoreTake(notification_semaphore, 0);
 	
 	for (;;) {
 		//Recibe en la UART y forwardea por la USART
@@ -234,21 +240,18 @@ static void uart_tunnel_rx_task(void *pvParameters)
 					} else if((rx_buffer[1]=='R')&&(rx_buffer[2]=='E')&&(rx_buffer[3]=='S')) {
 						pwr_command = RES_COMMAND;									//Pasar comando en queue
 						xQueueSend(sim_pwr_commands_queue,&pwr_command,time_out_definition);
-					}  else {
+					} else if((rx_buffer[1]=='A')&&(rx_buffer[2]=='T')) {
+						a_command.command=AT;
+						sendAtCommand(&a_command,&sim_instance);
+					}else {
 						putchar('N'); putchar('o'); putchar('C'); putchar('m'); putchar('d'); putchar(13); putchar(10);	//ResSim message
 					}
 					i=0;
 				} else {
 					//Text received
-					//returned_status = freertos_usart_write_packet_async(usart_port,						/* Start send. */
-					//rx_buffer, i,time_out_definition, notification_semaphore);
 					returned_status = freertos_usart_write_packet(usart_port,						/* Start send. */
 					rx_buffer, i,time_out_definition);
 					configASSERT(returned_status == STATUS_OK);
-					/* The async version of the write function is being used, so wait for
-					the end of the transmission.  No CPU time is used while waiting for the
-					semaphore.*/
-					//HOLAHOLAHOLAxSemaphoreTake(notification_semaphore, time_out_definition * 2);
 					i=0;
 				}				
 			}
@@ -335,3 +338,4 @@ portBASE_TYPE are_tunnel_tasks_still_running(void)
 #endif
 
 /*-----------------------------------------------------------*/
+#endif

@@ -270,17 +270,9 @@
 
 /* Sim900 includes. */
 #include "sim900/sim900.h"
-#include "sim900/simComAtCommands.h"
 
 /* A block time of 0 ticks simply means "don't block". */
 #define mainDONT_BLOCK                          (0)
-
-/* The priorities at which various tasks will get created. */
-#define mainUSART_TUNNEL_TASK_PRIORITY			(tskIDLE_PRIORITY)
-
-/* The stack sizes allocated to the various tasks. */
-#define mainUSART_TUNNEL_TASK_STACK_SIZE		(configMINIMAL_STACK_SIZE*3)
-#define mainUART_TUNNEL_TASK_STACK_SIZE			(configMINIMAL_STACK_SIZE*3)
 
 /*-----------------------------------------------------------*/
 
@@ -302,15 +294,13 @@ void vApplicationTickHook(void);
 
 int main(void)
 {
-	uint8_t hola=0;
+	sim900_t	sim_instance;
 	/* Prepare the hardware to run this demo. */
 	prvSetupHardware();
 	
 	/* Output demo infomation. */
 	printf("-- Patagon Terminal --\n\r");
 	printf("-- Compiled: %s %s --\n\r", __DATE__, __TIME__);
-	
-	//sendAtCommand(AT);
 	
 	/* Create the example tasks as per the configuration settings.
 	See the comments at the top of this file. */
@@ -322,6 +312,8 @@ int main(void)
 		mainUSART_TUNNEL_TASK_PRIORITY);
 	}
 	#endif /* confINCLUDE_USART_ECHO_TASKS */
+	
+	bootSim(BOARD_USART,&sim_instance);
 
 	/* Start the RTOS scheduler. */
 	vTaskStartScheduler();

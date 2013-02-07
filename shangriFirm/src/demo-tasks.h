@@ -45,31 +45,15 @@
 #define DEMO_TASKS_H
 
 #include "conf_example.h"
-#include "freertos_usart_serial.h"
-#include "usart.h"
-#include "uart.h"
+// #include "freertos_usart_serial.h"
+// #include "usart.h"
+// #include "uart.h"
+// #include "sim900/sim900.h"
 
-/* The size of the buffer provided to the USART driver for storage of received
- * bytes. */
-#define RX_BUFFER_SIZE_BYTES    (50)
-
-#define COMMAND_HEADER		'#'
-#define SIM_PWR_SEQUENCE	1000/portTICK_RATE_MS
-#define SIM_RES_SEQUENCE	10/portTICK_RATE_MS
-#define MAX_PWR_COMMANDS	2
-#define COMMAND_SIZE		sizeof(uint32_t)
-#define ON_COMMAND			11
-#define OFF_COMMAND			12
-#define RES_COMMAND			13
-
-void create_usart_uart_tunnel_tasks(Usart *pxUsart,uint16_t usart_stack_depth_words,
-									uint16_t uart_stack_depth_words,unsigned portBASE_TYPE task_priority);
-portBASE_TYPE are_tunnel_tasks_still_running(void);
-
-typedef	struct{
-	xQueueHandle sim_pwr_commands_queue;
-	freertos_usart_if myUsart;
-	} tunnel_params_t;
+// typedef	struct{
+// 	xQueueHandle sim_pwr_commands_queue;
+// 	freertos_usart_if myUsart;
+// 	} tunnel_params_t;
 
 #if (defined confINCLUDE_SPI_FLASH_TASK)
 #include "spi.h"

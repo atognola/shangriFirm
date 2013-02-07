@@ -9,9 +9,12 @@
 #ifndef SIMCOMATCOMMANDS_H_
 #define SIMCOMATCOMMANDS_H_
 
+#define	MAX_COMMAND_LENGTH		15
+
 /* Hayes AT command header */
 #define AT						"AT"
 #define ATplus					"AT+"
+#define STRING_TERM				"\r\n"
 
 /* Possible set commands */
 #define SET_BAUDARATE_COMM		"IPR"									//"ATE+IPR=[baudrate]<CR><LF>"
